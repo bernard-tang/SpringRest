@@ -1,4 +1,4 @@
-package com.example.accessingdatajpa;
+package com.example.accessingdatajpa.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -17,7 +17,7 @@ public class Customer {
 	private String firstName;
 	private String lastName;
 
-	protected Customer() {}
+	public Customer() {}
 
 	public Customer(String firstName, String lastName) {
 		this.firstName = firstName;
