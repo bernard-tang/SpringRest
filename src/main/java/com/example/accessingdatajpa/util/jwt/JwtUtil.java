@@ -1,4 +1,4 @@
-package com.example.accessingdatajpa.util;
+package com.example.accessingdatajpa.util.jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
