@@ -1,10 +1,14 @@
 package com.example.accessingdatajpa;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
 import com.example.accessingdatajpa.repository.CustomerRepository;
 import com.example.accessingdatajpa.repository.UserRepository;
@@ -12,7 +16,7 @@ import com.example.accessingdatajpa.entity.Customer;
 import com.example.accessingdatajpa.entity.User;
 
 @SpringBootApplication
-public class AccessingDataJpaApplication {
+public class AccessingDataJpaApplication extends SpringBootServletInitializer{
 
 	private static final Logger log = LoggerFactory.getLogger(AccessingDataJpaApplication.class);
 
@@ -58,12 +62,18 @@ public class AccessingDataJpaApplication {
 	@Bean
 	public CommandLineRunner userRepo(UserRepository repository) {
 		return (args) -> {
+			List<String> adminRoles = new ArrayList<String>();
+			List<String> userRoles = new ArrayList<String>();
+			
+			adminRoles.add("admin");
+			userRoles.add("user");
+			
 			// save a few users
-			repository.save(new User("Jack".toUpperCase(), "pass1"));
-			repository.save(new User("Chloe".toUpperCase(), "pass2"));
-			repository.save(new User("Kim".toUpperCase(), "pass3"));
-			repository.save(new User("David".toUpperCase(), "pass4"));
-			repository.save(new User("Michelle".toUpperCase(), "pass5"));
+			repository.save(new User("Jack".toUpperCase(), "pass1", adminRoles));
+			repository.save(new User("Chloe".toUpperCase(), "pass2", adminRoles));
+			repository.save(new User("Kim".toUpperCase(), "pass3", adminRoles));
+			repository.save(new User("David".toUpperCase(), "pass4", userRoles));
+			repository.save(new User("Michelle".toUpperCase(), "pass5", userRoles));
 
 			// fetch all customers
 			log.info("Users found with findAll():");
