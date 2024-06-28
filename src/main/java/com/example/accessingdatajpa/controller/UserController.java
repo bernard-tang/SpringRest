@@ -1,14 +1,17 @@
 package com.example.accessingdatajpa.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 //import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import com.example.accessingdatajpa.AccessingDataJpaApplication;
 import com.example.accessingdatajpa.entity.User;
 import com.example.accessingdatajpa.repository.UserRepository;
-import com.example.accessingdatajpa.util.JwtUtil;
+import com.example.accessingdatajpa.util.jwt.JwtUtil;
 
 @RestController
 @RequestMapping("/auth")
@@ -19,6 +22,8 @@ public class UserController {
     
     @Autowired
     private JwtUtil jwtUtil;
+    
+    private static final Logger log = LoggerFactory.getLogger(UserController.class);
 
 //    @Autowired
 //    private BCryptPasswordEncoder passwordEncoder;
@@ -43,6 +48,15 @@ public class UserController {
 //        } else {
 //            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");
 //        }
+    }
+    
+    @PostMapping("/logout")
+    public void logout(@RequestHeader("Authorization") String authorizationHeader) {
+        // Extract token from Authorization header (format: "Bearer <token>")
+        String token = authorizationHeader.substring(7); // Skip "Bearer " prefix
+        log.info("blacklist token " + token);
+        // Invalidate the token by adding it to the blacklist
+        jwtUtil.addToBlacklist(token);
     }
 
     // Other endpoints (e.g., registration) can be added here

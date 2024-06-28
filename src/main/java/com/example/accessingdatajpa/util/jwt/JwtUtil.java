@@ -1,6 +1,7 @@
 package com.example.accessingdatajpa.util.jwt;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
@@ -9,7 +10,9 @@ import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 
 @Component
@@ -20,6 +23,16 @@ public class JwtUtil {
 
     @Value("${jwt.expiration}")
     private long expirationTime;
+    
+    private static Set<String> blacklist = new HashSet<>();
+
+    public static void addToBlacklist(String token) {
+        blacklist.add(token);
+    }
+
+    public static boolean isBlacklisted(String token) {
+        return blacklist.contains(token);
+    }
 
     // Generate token for user
     public String generateToken(User user) {
@@ -69,6 +82,9 @@ public class JwtUtil {
 
     // Validate token
     public Boolean validateToken(String token, User user) {
+    	if (isBlacklisted(token)) {
+            throw new JwtException("Token is invalid");
+        }
         String username = extractUsername(token);
         return (username.equals(user.getUsername()) && !isTokenExpired(token));
     }
