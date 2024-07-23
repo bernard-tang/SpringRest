@@ -12,8 +12,10 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 import org.springframework.context.annotation.Bean;
 import com.example.accessingdatajpa.repository.CustomerRepository;
 import com.example.accessingdatajpa.repository.UserRepository;
+import com.example.accessingdatajpa.repository.ProductRepository;
 import com.example.accessingdatajpa.entity.Customer;
 import com.example.accessingdatajpa.entity.User;
+import com.example.accessingdatajpa.entity.Product;
 
 @SpringBootApplication
 public class AccessingDataJpaApplication extends SpringBootServletInitializer{
@@ -80,6 +82,31 @@ public class AccessingDataJpaApplication extends SpringBootServletInitializer{
 			log.info("-------------------------------");
 			repository.findAll().forEach(user -> {
 				log.info(user.toString());
+			});
+			log.info("");
+		};
+	}
+	
+	@Bean
+	public CommandLineRunner productRepo(ProductRepository repository) {
+		return (args) -> {
+			
+			// save a few users
+			repository.save(new Product("M3", "Car", "BMW"));
+			repository.save(new Product("X5", "Car", "BMW"));
+			repository.save(new Product("Model 3", "Car", "Tesla"));
+			repository.save(new Product("RX7", "Car", "Mazda"));
+			repository.save(new Product("Seamaster 300", "Watch", "Omega"));
+			repository.save(new Product("Speedmaster", "Watch", "Omega"));
+			repository.save(new Product("Blackbay", "Watch", "Tudor"));
+			repository.save(new Product("Submariner", "Watch", "Rolex"));
+			repository.save(new Product("Daytona", "Watch", "Rolex"));
+
+			// fetch all customers
+			log.info("Products found with findAll():");
+			log.info("-------------------------------");
+			repository.findAll().forEach(product -> {
+				log.info(product.toString());
 			});
 			log.info("");
 		};
