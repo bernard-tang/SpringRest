@@ -85,12 +85,14 @@ public class UserController {
     }
     
     @PostMapping("/logout")
-    public void logout(@RequestHeader("Authorization") String authorizationHeader) {
+    public ResponseEntity<String> logout(@RequestHeader("Authorization") String authorizationHeader) {
         // Extract token from Authorization header (format: "Bearer <token>")
         String token = authorizationHeader.substring(7); // Skip "Bearer " prefix
         log.info("blacklist token " + token);
         // Invalidate the token by adding it to the blacklist
         jwtUtil.addToBlacklist(token);
+        
+        return ResponseEntity.ok("Done");
     }
 
     // Other endpoints (e.g., registration) can be added here
