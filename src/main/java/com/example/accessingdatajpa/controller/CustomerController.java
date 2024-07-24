@@ -1,8 +1,10 @@
 package com.example.accessingdatajpa.controller;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,13 +31,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @RestController
 //@RequestMapping("/customer")
 public class CustomerController {
-	
+
 //	@Autowired
 //	UserService userService;
-	
+
 	@Autowired
 	CustomerRepository repository;
-	
+
 	@GetMapping("/")
 	public String index() {
 		return "Greetings from Spring Boot!";
@@ -45,7 +47,7 @@ public class CustomerController {
 //		Optional optTest = Optional.ofNullable(yyy);
 //		return testTwo(optTest );
 		///
-		
+
 		///
 //		ClassA classA = new ClassA();
 //		
@@ -62,151 +64,156 @@ public class CustomerController {
 //		
 //		return results;
 		///
-		
+
 		///
 //		int num = findMaxNum(1, 1000000000, 108000000);
 //		
 //		return String.valueOf(num);
 		///
-		
+
 	}
-	
+
 	@GetMapping("/testOne")
 	public String testOne() {
 		return test("jjj", "kkk");
 	}
-	
-	
+
 	@GetMapping("/testTwo")
 	public String testTwo() {
 		String yyy = "fff";
 		Optional optTest = Optional.ofNullable(yyy);
-		return testTwo(optTest );
+		return testTwo(optTest);
 	}
-	
-	
-	
+
 	@GetMapping("/testThree")
 	public String testThree() {
 		ClassA classA = new ClassA();
-		
+
 		String results = "";
 //		List<String> values = new ArrayList<String>();
-		
-		for(ClassB b : classA.getValues()) {
-			for(ClassString classString : b.getValues()) {
-				for(String s : classString.getValues()) {
+
+		for (ClassB b : classA.getValues()) {
+			for (ClassString classString : b.getValues()) {
+				for (String s : classString.getValues()) {
 					results += " " + s;
 				}
 			}
 		}
-		
+
 		return results;
 	}
-	
+
 	@PostMapping("/testFindMaxNum")
 	public String testFindMaxNum() {
 		int num = findMaxNum(1, 2, 3);
-		
+
 		return String.valueOf(num);
 	}
-	
+
 	@GetMapping("/testFour")
 	public String testFour() {
 		String yyy = "fff";
 		Optional optTest = Optional.ofNullable(yyy);
-		
+
 //		userService.saveUser(new User("Tang", "This is Tang", (long)1111));
 		return "hi";
 	}
-	
-	
+
 	@GetMapping("/testFive")
 	public String testFive() {
-		
+
 		repository.findAll().forEach(customer -> {
 			System.out.println(customer.toString());
 		});
-		
+
 //		userService.saveUser(new User("Tang", "This is Tang", (long)1111));
 		return "hi";
 	}
-	
+
+	@GetMapping("/testSix")
+	public char testSix() {
+		String word = "bernard";
+		Set<Character> container = new HashSet<>();
+		char[] arrChars = word.toCharArray();
+		for (char temp : arrChars) {
+			if (container.contains(temp)) {
+				return temp;
+			} else {
+				container.add(temp);
+			}
+		}
+		return "hi".charAt(0);
+
+	}
+
 	@PutMapping("/customer")
 	public ResponseEntity<Customer> create(@RequestBody String payload) {
 		Customer result = null;
 		try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            Customer customer = objectMapper.readValue(payload, Customer.class);
+			ObjectMapper objectMapper = new ObjectMapper();
+			Customer customer = objectMapper.readValue(payload, Customer.class);
 
-            System.out.println(customer); // Output the converted Java object
+			System.out.println(customer); // Output the converted Java object
 //            return null;
-            result = repository.save(customer);
-            
-            return new ResponseEntity<Customer>(
-            		result, 
-                    HttpStatus.CREATED);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-		return new ResponseEntity<Customer>(
-				result, 
-                HttpStatus.BAD_REQUEST);
-		
+			result = repository.save(customer);
+
+			return new ResponseEntity<Customer>(result, HttpStatus.CREATED);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return new ResponseEntity<Customer>(result, HttpStatus.BAD_REQUEST);
+
 	}
-	
+
 	@GetMapping("/getAllCustomers")
 	public ResponseEntity<List<Customer>> getAllCustomers() {
 		List<Customer> results = new ArrayList<Customer>();
-		
+
 		repository.findAll().forEach(results::add);
-		
-		return new ResponseEntity<>(
-				results, 
-                HttpStatus.OK);
+
+		return new ResponseEntity<>(results, HttpStatus.OK);
 	}
-	
-	
-	public String test(String ...strTest) {
+
+	public String test(String... strTest) {
 		String strResults = "Hi Greetings from Spring Boot!";
-		
+
 		for (String temp : strTest) {
 			strResults += " " + temp;
 		}
 		return strResults;
 	}
-	
-	public String testTwo (Optional<String> optStrTest) {
+
+	public String testTwo(Optional<String> optStrTest) {
 		String strResults = "HI Greetings from Spring Boot!";
-		
-		if(optStrTest.isPresent())
+
+		if (optStrTest.isPresent())
 			return strResults + " " + optStrTest.get();
-		
+
 		return strResults;
 	}
-	
+
 	public int findMaxNum(int x, int y, int z) {
 		int maxNum = Integer.MIN_VALUE;
-		
+
 		int diff = Math.abs(x - y);
-		
+
 		int maxSteps = z / 2;
-		
-		for(int i = 0; i <= maxSteps; i++) {
-			int newX = x+i;
-			
-			if(Math.abs(newX - y) <= (z - i)) {
+
+		for (int i = 0; i <= maxSteps; i++) {
+			int newX = x + i;
+
+			if (Math.abs(newX - y) <= (z - i)) {
 				maxNum = Math.max(maxNum, newX);
 			}
-			
+
 			newX = x - i;
-			
-			if(Math.abs(newX - y) <= (z - i)) {
+
+			if (Math.abs(newX - y) <= (z - i)) {
 				maxNum = Math.max(maxNum, newX);
 			}
-			
+
 		}
-		
+
 		return maxNum == Integer.MIN_VALUE ? -1 : maxNum;
 	}
 
@@ -214,7 +221,7 @@ public class CustomerController {
 
 class ClassA {
 	List<ClassB> values = new ArrayList<ClassB>();
-	
+
 	public ClassA() {
 		values.add(new ClassB());
 		values.add(new ClassB());
@@ -222,7 +229,7 @@ class ClassA {
 		values.add(new ClassB());
 		values.add(new ClassB());
 	}
-	
+
 	public List<ClassB> getValues() {
 		return values;
 	}
@@ -230,7 +237,7 @@ class ClassA {
 
 class ClassB {
 	List<ClassString> values = new ArrayList<ClassString>();
-	
+
 	public ClassB() {
 		values.add(new ClassString());
 		values.add(new ClassString());
@@ -238,6 +245,7 @@ class ClassB {
 		values.add(new ClassString());
 		values.add(new ClassString());
 	}
+
 	public List<ClassString> getValues() {
 		return values;
 	}
@@ -245,7 +253,7 @@ class ClassB {
 
 class ClassString {
 	List<String> values = new ArrayList<String>();
-	
+
 	public ClassString() {
 		values.add("a");
 		values.add("b");
@@ -253,7 +261,7 @@ class ClassString {
 		values.add("d");
 		values.add("e");
 	}
-	
+
 	public List<String> getValues() {
 		return values;
 	}

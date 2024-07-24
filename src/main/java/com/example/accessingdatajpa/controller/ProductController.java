@@ -3,6 +3,7 @@ package com.example.accessingdatajpa.controller;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -26,6 +27,9 @@ import org.springframework.http.ResponseEntity;
 
 import com.example.accessingdatajpa.entity.Product;
 import com.example.accessingdatajpa.repository.ProductRepository;
+import com.example.accessingdatajpa.util.payload.Bundle;
+import com.example.accessingdatajpa.util.payload.Resource;
+import com.example.accessingdatajpa.util.payload.ResourceUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RestController
@@ -37,6 +41,9 @@ public class ProductController {
 	
 	@Autowired
 	ProductRepository repository;
+	
+	 @Autowired
+	 ResourceUtil resourceUtil;
 	
 	@PutMapping("/product")
 	public ResponseEntity<Product> create(@RequestBody String payload) {
@@ -62,10 +69,68 @@ public class ProductController {
 	}
 	
 	@GetMapping("/getAllProducts")
-	public ResponseEntity<List<Product>> getAllProducts() {
+	public ResponseEntity<Bundle> getAllProducts(@RequestParam("offset") Optional<Integer> offset, @RequestParam("limit") Optional<Integer> limit) {
 		List<Product> results = new ArrayList<Product>();
+		Bundle bundle = new Bundle();
 		
 		repository.findAll().forEach(results::add);
+		
+		if(offset.isPresent() && limit.isPresent())
+		{
+			int offsetValue = offset.get();
+			int limitValue = limit.get();
+			
+			int fromIndex = offsetValue;
+	        int toIndex = Math.min(offsetValue + limitValue, results.size());
+	        
+			List<Product> filteredResults = results.subList(fromIndex, toIndex);
+			
+//			for(Object obj : filteredResults) {
+//				bundle.getEntry().add(resourceUtil.convertObjectToResource(obj));
+//			}
+//			bundle.setTotal(results.size());
+			
+			bundle = resourceUtil.convertListObjectToBundle(filteredResults, results.size());
+			
+			return new ResponseEntity<>(
+					bundle, 
+	                HttpStatus.OK);
+		}
+		
+		return new ResponseEntity<>(
+				bundle, 
+                HttpStatus.OK);
+	}
+	
+	@GetMapping("/getProductsByCategory")
+	public ResponseEntity<List<Product>> getProductsByCategory(@RequestBody Map<String, String> payload) {
+		List<Product> results = new ArrayList<Product>();
+		
+		if(!payload.get("filter").isEmpty()) {
+			String filterValue = payload.get("filter");
+			System.out.println("filter  " + filterValue);
+			if(!payload.get("offset").isEmpty() && !payload.get("limit").isEmpty())
+			{
+				int offsetValue = Integer.parseInt(payload.get("offset"));
+				int limitValue = Integer.parseInt(payload.get("limit"));
+		        
+		        repository.findAll().forEach(product -> {
+					if(product.getCategory().equalsIgnoreCase(filterValue)) {
+						results.add(product);
+					}
+				});
+		        
+		        int fromIndex = offsetValue;
+		        int toIndex = Math.min(offsetValue + limitValue, results.size());
+		        
+				List<Product> filteredResults = results.subList(fromIndex, toIndex);
+				
+				return new ResponseEntity<>(
+						filteredResults, 
+		                HttpStatus.OK);
+			}
+		}
+		
 		
 		return new ResponseEntity<>(
 				results, 
