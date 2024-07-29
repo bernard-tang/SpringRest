@@ -101,6 +101,13 @@ public class AccessingDataJpaApplication extends SpringBootServletInitializer{
 			repository.save(new Product("Blackbay", "Watch", "Tudor"));
 			repository.save(new Product("Submariner", "Watch", "Rolex"));
 			repository.save(new Product("Daytona", "Watch", "Rolex"));
+			repository.save(new Product("Cotton shirt", "Clothings", "Uniqlo"));
+			repository.save(new Product("Long pants", "Clothings", "Uniqlo"));
+			repository.save(new Product("Winter jacket", "Clothings", "Uniqlo"));
+			repository.save(new Product("Shorts", "Clothings", "Uniqlo"));
+			repository.save(new Product("Beanie", "Clothings", "Uniqlo"));
+			repository.save(new Product("Cap", "Clothings", "Uniqlo"));
+			
 
 			// fetch all customers
 			log.info("Products found with findAll():");
